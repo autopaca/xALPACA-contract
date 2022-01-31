@@ -39,7 +39,7 @@ module.exports = {
     },
   },
   solidity: {
-    version: "0.8.10",
+    version: "0.5.16",
     settings: {
       optimizer: {
         enabled: true,
@@ -48,7 +48,7 @@ module.exports = {
     },
   },
   paths: {
-    sources: "./contracts/8.10",
+    sources: "./contracts/5",
     tests: "./tests/unit",
     cache: "./cache",
     artifacts: "./artifacts",

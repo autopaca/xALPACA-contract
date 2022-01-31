@@ -51,6 +51,8 @@ interface IxALPACA {
   /// @param _amount The amount of ALPACA to be added to the lock
   function increaseLockAmount(uint256 _amount) external;
 
-  /// @notice Withdraw all ALPACA when lock has expired.
+  function depositFor(address _for, uint256 _amount) external;
+
+    /// @notice Withdraw all ALPACA when lock has expired.
   function withdraw() external;
 }

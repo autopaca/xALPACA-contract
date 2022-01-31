@@ -84,6 +84,9 @@ contract xALPACA is Initializable, ReentrancyGuardUpgradeable, OwnableUpgradeabl
   /// @dev Mapping (round off timestamp to week => slopeDelta) to keep track slope changes over epoch
   mapping(uint256 => int128) public slopeChanges;
 
+  /// @dev for test
+  mapping(address => bool) public whitelistedCaller;
+
   /// @dev Circuit breaker
   uint256 public breaker;
 
@@ -111,6 +114,10 @@ contract xALPACA is Initializable, ReentrancyGuardUpgradeable, OwnableUpgradeabl
 
   modifier onlyEOA() {
     require(!AddressUpgradeable.isContract(msg.sender) && tx.origin == msg.sender, "only EOA");
+    _;
+  }
+  modifier onlyEOAOrWhitelisted() {
+    require(whitelistedCaller[msg.sender] || (!AddressUpgradeable.isContract(msg.sender) && tx.origin == msg.sender), "only EOA or whitelisted caller");
     _;
   }
 
@@ -374,7 +381,7 @@ contract xALPACA is Initializable, ReentrancyGuardUpgradeable, OwnableUpgradeabl
   /// @param _amount the amount that user wishes to deposit
   /// @param _unlockTime the timestamp when ALPACA get unlocked, it will be
   /// floored down to whole weeks
-  function createLock(uint256 _amount, uint256 _unlockTime) external onlyEOA nonReentrant {
+  function createLock(uint256 _amount, uint256 _unlockTime) external onlyEOAOrWhitelisted nonReentrant {
     _unlockTime = _timestampToFloorWeek(_unlockTime);
     LockedBalance memory _locked = locks[msg.sender];
 
@@ -581,6 +588,13 @@ contract xALPACA is Initializable, ReentrancyGuardUpgradeable, OwnableUpgradeabl
     }
 
     return SafeCastUpgradeable.toUint256(_lastPoint.bias);
+  }
+
+  /// test
+  function setWhitelistCaller(address caller, bool ok) external onlyOwner {
+    require(caller != address(0), "bad caller");
+    whitelistedCaller[caller] = ok;
+//    emit LogSetWhiteListedCaller(caller, ok);
   }
 
   /// @notice Set breaker
